@@ -1,0 +1,353 @@
+diff --git a/conftest.py b/conftest.py
+index 3c3fefc..ed332bf 100644
+--- a/conftest.py
++++ b/conftest.py
+@@ -21,6 +21,7 @@ RELATED_HOST_NAME = 'rh'
+ TEST_HOST_RELATED = FQDN(RELATED_HOST_NAME + '.' + TEST_HOST.host, TEST_HOST.domain)
+ NAMESERVER_IP = "127.0.0.1"
+ NAMESERVER2_IP = NAMESERVER_IP  # use same server as tests query shortly after update, too quick for secondary
++NAMESERVER_UPDATE_KEYNAME = "custom-keyname"
+ NAMESERVER_UPDATE_ALGORITHM = "HMAC_SHA512"
+ # no problem, you can ONLY update the TESTDOMAIN with this secret, nothing else:
+ NAMESERVER_UPDATE_SECRET = "YWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYQ=="
+@@ -77,6 +78,7 @@ def db_init(db):  # note: db is a predefined fixture and required here to have t
+         name=TESTDOMAIN,  # special: test-domain update secret!
+         nameserver_ip=NAMESERVER_IP,
+         nameserver2_ip=NAMESERVER2_IP,
++        nameserver_update_keyname=NAMESERVER_UPDATE_KEYNAME,
+         nameserver_update_algorithm=NAMESERVER_UPDATE_ALGORITHM,
+         nameserver_update_secret=NAMESERVER_UPDATE_SECRET,
+         public=NAMESERVER_PUBLIC,
+@@ -88,6 +90,7 @@ def db_init(db):  # note: db is a predefined fixture and required here to have t
+         name=BASEDOMAIN,
+         nameserver_ip=NAMESERVER_IP,
+         nameserver2_ip=NAMESERVER2_IP,
++        nameserver_update_keyname=NAMESERVER_UPDATE_KEYNAME,
+         nameserver_update_algorithm=NAMESERVER_UPDATE_ALGORITHM,
+         nameserver_update_secret='invalid=',  # we don't send updates there (and the real key is really secret)
+         public=NAMESERVER_PUBLIC,
+diff --git a/nsupdate/locale/de/LC_MESSAGES/django.po b/nsupdate/locale/de/LC_MESSAGES/django.po
+index 2530ae0..bd51e9b 100644
+--- a/nsupdate/locale/de/LC_MESSAGES/django.po
++++ b/nsupdate/locale/de/LC_MESSAGES/django.po
+@@ -398,6 +398,10 @@ msgstr "Nameserver IP (sekundär)"
+ msgid "IP where DNS queries for this zone will be sent to"
+ msgstr "IP, wo die DNS-Abfragen für diese Zone hingesendet werden"
+ 
++#: main/models.py:102
++msgid "nameserver update keyname"
++msgstr "Nameserver-Update-Key"
++
+ #: main/models.py:95
+ msgid "nameserver update secret"
+ msgstr "Nameserver-Update-Secret"
+diff --git a/nsupdate/locale/en/LC_MESSAGES/django.po b/nsupdate/locale/en/LC_MESSAGES/django.po
+index f18d4b6..b245ba9 100644
+--- a/nsupdate/locale/en/LC_MESSAGES/django.po
++++ b/nsupdate/locale/en/LC_MESSAGES/django.po
+@@ -351,6 +351,10 @@ msgstr ""
+ msgid "IP where DNS queries for this zone will be sent to"
+ msgstr ""
+ 
++#: main/models.py:102
++msgid "nameserver update keyname"
++msgstr ""
++
+ #: main/models.py:95
+ msgid "nameserver update secret"
+ msgstr ""
+diff --git a/nsupdate/locale/fr/LC_MESSAGES/django.po b/nsupdate/locale/fr/LC_MESSAGES/django.po
+index e01e677..3a8b31d 100644
+--- a/nsupdate/locale/fr/LC_MESSAGES/django.po
++++ b/nsupdate/locale/fr/LC_MESSAGES/django.po
+@@ -393,6 +393,10 @@ msgstr ""
+ msgid "IP where DNS queries for this zone will be sent to"
+ msgstr ""
+ 
++#: main/models.py:102
++msgid "nameserver update keyname"
++msgstr ""
++
+ #: main/models.py:95
+ msgid "nameserver update secret"
+ msgstr ""
+diff --git a/nsupdate/locale/it/LC_MESSAGES/django.po b/nsupdate/locale/it/LC_MESSAGES/django.po
+index 56baf09..231d06b 100644
+--- a/nsupdate/locale/it/LC_MESSAGES/django.po
++++ b/nsupdate/locale/it/LC_MESSAGES/django.po
+@@ -395,6 +395,10 @@ msgstr ""
+ msgid "IP where DNS queries for this zone will be sent to"
+ msgstr ""
+ 
++#: main/models.py:102
++msgid "nameserver update keyname"
++msgstr ""
++
+ #: main/models.py:95
+ msgid "nameserver update secret"
+ msgstr ""
+diff --git a/nsupdate/locale/pl/LC_MESSAGES/django.po b/nsupdate/locale/pl/LC_MESSAGES/django.po
+index c9ff4f3..6ff1697 100644
+--- a/nsupdate/locale/pl/LC_MESSAGES/django.po
++++ b/nsupdate/locale/pl/LC_MESSAGES/django.po
+@@ -355,6 +355,10 @@ msgstr ""
+ msgid "IP where DNS queries for this zone will be sent to"
+ msgstr ""
+ 
++#: main/models.py:102
++msgid "nameserver update keyname"
++msgstr ""
++
+ #: main/models.py:95
+ msgid "nameserver update secret"
+ msgstr ""
+diff --git a/nsupdate/locale/tr/LC_MESSAGES/django.po b/nsupdate/locale/tr/LC_MESSAGES/django.po
+index 3fd7808..1f99c38 100644
+--- a/nsupdate/locale/tr/LC_MESSAGES/django.po
++++ b/nsupdate/locale/tr/LC_MESSAGES/django.po
+@@ -352,6 +352,10 @@ msgstr ""
+ msgid "IP where DNS queries for this zone will be sent to"
+ msgstr ""
+ 
++#: main/models.py:102
++msgid "nameserver update keyname"
++msgstr ""
++
+ #: main/models.py:95
+ msgid "nameserver update secret"
+ msgstr ""
+diff --git a/nsupdate/locale/zh_CN/LC_MESSAGES/django.po b/nsupdate/locale/zh_CN/LC_MESSAGES/django.po
+index 147838f..abe4a03 100644
+--- a/nsupdate/locale/zh_CN/LC_MESSAGES/django.po
++++ b/nsupdate/locale/zh_CN/LC_MESSAGES/django.po
+@@ -358,6 +358,10 @@ msgstr ""
+ msgid "IP where DNS queries for this zone will be sent to"
+ msgstr ""
+ 
++#: main/models.py:102
++msgid "nameserver update keyname"
++msgstr ""
++
+ #: main/models.py:95
+ msgid "nameserver update secret"
+ msgstr ""
+diff --git a/nsupdate/main/dnstools.py b/nsupdate/main/dnstools.py
+index f12e4d3..281ca79 100644
+--- a/nsupdate/main/dnstools.py
++++ b/nsupdate/main/dnstools.py
+@@ -262,7 +262,7 @@ def query_ns(fqdn, rdtype, prefer_primary=False):
+         return ip
+     except (dns.resolver.Timeout, dns.resolver.NoNameservers, dns.message.UnknownTSIGKey) as e:  # socket.error also?
+         logger.warning("error when querying for name '%s' in zone '%s' with rdtype '%s' [%s]." % (
+-                       fqdn.host, origin, rdtype, str(e)))
++                       fqdn, origin, rdtype, str(e)))
+         set_ns_availability(origin, False)
+         raise
+ 
+@@ -316,7 +316,7 @@ def get_ns_info(fqdn):
+             # retry timeout is over, set it available again
+             set_ns_availability(domain, True)
+     algorithm = getattr(dns.tsig, d.nameserver_update_algorithm)
+-    return (d.nameserver_ip, d.nameserver2_ip, fqdn.domain, domain, fqdn.host, domain,
++    return (d.nameserver_ip, d.nameserver2_ip, d.nameserver_update_origin, domain, fqdn.host, d.nameserver_update_keyname,
+             d.nameserver_update_secret, algorithm)
+ 
+ 
+@@ -344,14 +344,14 @@ def update_ns(fqdn, rdtype='A', ipaddr=None, action='upd', ttl=60):
+     upd = dns.update.Update(origin, keyring=keyring, keyalgorithm=algo)
+     if action == 'add':
+         assert ipaddr is not None
+-        upd.add(name, ttl, rdtype, ipaddr)
++        upd.add(str(fqdn) + '.', ttl, rdtype, ipaddr)
+     elif action == 'del':
+-        upd.delete(name, rdtype)
++        upd.delete(str(fqdn) + '.', rdtype)
+     elif action == 'upd':
+         assert ipaddr is not None
+-        upd.replace(name, ttl, rdtype, ipaddr)
+-    logger.debug("performing %s for name %s and origin %s with rdtype %s and ipaddr %s" % (
+-                 action, name, origin, rdtype, ipaddr))
++        upd.replace(str(fqdn) + '.', ttl, rdtype, ipaddr)
++    logger.debug("performing %s for fqdn %s and origin %s with rdtype %s and ipaddr %s" % (
++                 action, fqdn, origin, rdtype, ipaddr))
+     try:
+         response = dns.query.tcp(upd, nameserver, timeout=UPDATE_TIMEOUT)
+         rcode = response.rcode()
+diff --git a/nsupdate/main/forms.py b/nsupdate/main/forms.py
+index 7944198..8552b66 100644
+--- a/nsupdate/main/forms.py
++++ b/nsupdate/main/forms.py
+@@ -94,7 +94,7 @@ class EditDomainForm(forms.ModelForm):
+     class Meta(object):
+         model = Domain
+         fields = ['comment', 'nameserver_ip', 'nameserver2_ip', 'public', 'available',
+-                  'nameserver_update_algorithm', 'nameserver_update_secret']
++                  'nameserver_update_origin', 'nameserver_update_keyname', 'nameserver_update_algorithm', 'nameserver_update_secret']
+ 
+ 
+ class CreateUpdaterHostConfigForm(forms.ModelForm):
+diff --git a/nsupdate/main/migrations/0012_auto_20190903_1400.py b/nsupdate/main/migrations/0012_auto_20190903_1400.py
+new file mode 100644
+index 0000000..591fd5e
+--- /dev/null
++++ b/nsupdate/main/migrations/0012_auto_20190903_1400.py
+@@ -0,0 +1,54 @@
++# -*- coding: utf-8 -*-
++from __future__ import unicode_literals
++
++from django.db import migrations, models
++import django.core.validators
++
++
++def set_keyname_defaults(apps, schema_editor):
++    Domain = apps.get_model('main', 'domain')
++    for domain in Domain.objects.all().iterator():
++        domain.nameserver_update_keyname = domain.name + '.'
++        domain.save()
++
++
++def reverse_func(apps, schema_editor):
++    pass
++
++
++class Migration(migrations.Migration):
++
++    dependencies = [
++        ('main', '0011_auto_20170526_2113'),
++    ]
++
++    operations = [
++        migrations.AddField(
++            model_name='domain',
++            name='nameserver_update_keyname',
++            field=models.CharField(
++                null=True,
++                help_text='Name of the secret key use for dynamic updates',
++                max_length=255,
++                verbose_name='nameserver_update_keyname',
++                validators=[
++                    django.core.validators.RegexValidator(
++                        regex=b'([a-zA-Z0-9-_]+\\.)+', message='Invalid key name')
++                ]
++            ),
++        ),
++        migrations.RunPython(set_keyname_defaults, reverse_func),
++        migrations.AlterField(
++            model_name='domain',
++            name='nameserver_update_keyname',
++            field=models.CharField(
++                help_text='Name of the secret key use for dynamic updates',
++                max_length=255,
++                verbose_name='nameserver_update_keyname',
++                validators=[
++                    django.core.validators.RegexValidator(
++                        regex=b'([a-zA-Z0-9-_]+\\.)', message='Invalid key name')
++                ]
++            ),
++        ),
++    ]
+diff --git a/nsupdate/main/migrations/0013_auto_20190903_1700.py b/nsupdate/main/migrations/0013_auto_20190903_1700.py
+new file mode 100644
+index 0000000..38cc3cb
+--- /dev/null
++++ b/nsupdate/main/migrations/0013_auto_20190903_1700.py
+@@ -0,0 +1,52 @@
++# -*- coding: utf-8 -*-
++from __future__ import unicode_literals
++
++from django.db import migrations, models
++import django.core.validators
++
++
++def set_keyname_defaults(apps, schema_editor):
++    Domain = apps.get_model('main', 'domain')
++    for domain in Domain.objects.all().iterator():
++        domain.nameserver_update_origin = domain.name
++        domain.save()
++
++
++def reverse_func(apps, schema_editor):
++    pass
++
++
++class Migration(migrations.Migration):
++
++    dependencies = [
++        ('main', '0012_auto_20190903_1400'),
++    ]
++
++    operations = [
++        migrations.AddField(
++            model_name='domain',
++            name='nameserver_update_origin',
++            field=models.CharField(
++                null=True,
++                help_text='Origin domain to use for dynamic updates',
++                max_length=255,
++                verbose_name='nameserver_update_origin',
++                validators=[
++                  django.core.validators.RegexValidator(regex=b'([a-zA-Z0-9-_]+\\.)+[a-zA-Z0-9-_]{2,}', message='Invalid domain name')
++                ]
++            ),
++        ),
++        migrations.RunPython(set_keyname_defaults, reverse_func),
++        migrations.AlterField(
++            model_name='domain',
++            name='nameserver_update_origin',
++            field=models.CharField(
++                help_text='Origin domain to use for dynamic updates',
++                max_length=255,
++                verbose_name='nameserver_update_origin',
++                validators=[
++                  django.core.validators.RegexValidator(regex=b'([a-zA-Z0-9-_]+\\.)+[a-zA-Z0-9-_]{2,}', message='Invalid domain name')
++                ]
++            ),
++        ),
++    ]
+diff --git a/nsupdate/main/models.py b/nsupdate/main/models.py
+index 5cc69ca..c3dbf0d 100644
+--- a/nsupdate/main/models.py
++++ b/nsupdate/main/models.py
+@@ -98,6 +98,16 @@ class Domain(models.Model):
+         max_length=40,  # ipv6 = 8 * 4 digits + 7 colons
+         blank=True, null=True,
+         help_text=_("IP where DNS queries for this zone will be sent to"))
++    nameserver_update_origin = models.CharField(
++        _("nameserver update origin"),
++        max_length=255,  # RFC 2181 (and also: max length of unique fields)
++        validators=[RegexValidator(regex=r"([a-zA-Z0-9-_]+\.)+[a-zA-Z0-9-_]{2,}", message=_("Invalid domain name"))],
++        help_text=_("Origin domain to use for dynamic updates"))
++    nameserver_update_keyname = models.CharField(
++        _("nameserver update keyname"),
++        max_length=255,  # RFC 2181 (and also: max length of unique fields)
++        validators=[RegexValidator(regex=r"([a-zA-Z0-9-_]+\.)+", message=_("Invalid key name"))],
++        help_text=_("Name of the secret key use for dynamic updates"))
+     nameserver_update_secret = models.CharField(
+         _("nameserver update secret"),
+         max_length=88,  # 512 bits base64 -> 88 bytes
+diff --git a/nsupdate/main/templates/main/generate_ns_secret.html b/nsupdate/main/templates/main/generate_ns_secret.html
+index 57e777d..186860b 100644
+--- a/nsupdate/main/templates/main/generate_ns_secret.html
++++ b/nsupdate/main/templates/main/generate_ns_secret.html
+@@ -19,7 +19,7 @@
+                 <pre>
+ // configuration snippet for bind 9 nameserver (put it into /etc/bind9/named.conf )
+ 
+-key "{{ object.name }}." {
++key "{{ object.nameserver_update_keyname }}." {
+     // everyone who has this key may update this zone:
+     // must be same algorithm as in the Domain record of the nsupdate.info based service
+     algorithm {{ object.get_bind9_algorithm }};
+diff --git a/nsupdate/main/views.py b/nsupdate/main/views.py
+index cdb7605..51f1e8e 100644
+--- a/nsupdate/main/views.py
++++ b/nsupdate/main/views.py
+@@ -449,6 +449,8 @@ class AddDomainView(CreateView):
+         except dns.name.EmptyLabel as err:
+             success, level, msg = False, messages.ERROR, 'Invalid domain name [%s]' % str(err)
+         else:
++            self.object.nameserver_update_origin = self.object.name
++            self.object.nameserver_update_keyname = self.object.name + '.'
+             self.object.created_by = self.request.user
+             self.object.save()
+             success, level, msg = True, messages.SUCCESS, 'Domain added.'
