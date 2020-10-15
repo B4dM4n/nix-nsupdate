@@ -5,31 +5,30 @@
   };
 
   outputs = { self, nixpkgs, flake-utils }:
-    flake-utils.lib.eachDefaultSystem (system:
-      let
-        overlay = final: prev: with final; { };
+    flake-utils.lib.eachDefaultSystem
+      (system:
+        let
+          pkgs = with nixpkgs.legacyPackages.${system};
+            (extend prefer-remote-fetch).extend self.overlay;
+        in
+        with pkgs; {
+          packages = {
+            inherit (python3Packages) nsupdate gunicorn;
+          };
 
-        pkgs = with nixpkgs.legacyPackages.${system};
-          (extend prefer-remote-fetch).extend overlay;
+          defaultPackage = pkgs.python3.withPackages (p: with p; [ nsupdate gunicorn ]);
 
-        python3 = pkgs.python3.override {
+          devShell = mkShell {
+            preferLocalBuild = true;
+
+            buildInputs = [ self.packages.${system}.defaultPackage ];
+          };
+        }) // {
+      overlay = final: prev: with final; {
+        python3 = prev.python3.override {
           packageOverrides = pkgs.callPackage ./deps.nix { };
         };
-      in
-      with pkgs; {
-        packages = {
-          inherit (python3.pkgs) nsupdate gunicorn;
-        };
-
-        defaultPackage = self.packages.${system}.nsupdate;
-
-        devShell = mkShell {
-          preferLocalBuild = true;
-
-          buildInputs = with self.packages.${system}; [
-            nsupdate
-            gunicorn
-          ];
-        };
-      });
+        python3Packages = python3.pkgs;
+      };
+    };
 }
